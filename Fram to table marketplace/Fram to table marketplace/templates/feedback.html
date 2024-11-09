@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block title %}Feedback{% endblock %}
+{% block content %}
+
+<!-- Internal CSS for About Us Page -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px 0;
+        margin-bottom: 20px;
+    }
+
+    nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    nav ul li {
+        margin: 0 15px;
+    }
+
+    nav ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        padding: 10px 15px;
+        display: block;
+        transition: background-color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+        background-color: #555;
+        border-radius: 5px;
+    }
+
+    
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        nav ul {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin: 10px 0;
+        }
+    }
+    h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        margin-top: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        color: #333;
+        margin-right: 10px;
+        width: 150px; /* Set the width for the label */
+    }
+
+    .form-group input[type="text"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        flex-grow: 1;
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Optional: Add responsiveness */
+    @media (max-width: 600px) {
+        form {
+            padding: 15px;
+        }
+        .form-group {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-group label {
+            width: 100%; /* Make labels full width on small screens */
+            margin-bottom: 5px;
+        }
+    }
+    .flash-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        background-color: #333;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .flash-message.show {
+        opacity: 1;
+    }
+
+    .flash-message.success {
+        background-color: #28a745;
+    }
+
+    .flash-message.error {
+        background-color: #dc3545;
+    }
+
+    .flash-message.info {
+        background-color: #007bff;
+    }
+
+    .flash-message.warning {
+        background-color: #ffc107;
+    }
+</style>
+
+<header>
+    <nav>
+        <ul>
+            {% if session['username'] %}
+            <li><a href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+            
+            {% endif %}
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for('services') }}">Services</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            {% if session['username'] %}
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<h2>Submit Feedback</h2>
+    <form method="POST" action="{{ url_for('feedback') }}">
+        <div class="form-group">
+            <label for="product">Product:</label>
+            <select name="product_id" required>
+                {% for product in products %}
+                    <option value="{{ product._id }}">{{ product.product_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="feedback">Feedback:</label>
+            <textarea name="feedback" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="rating">Rating:</label>
+            <select name="rating" required>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" name="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Contact:</label>
+            <input type="text" name="contact" required>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <textarea name="address" rows="4" required></textarea>
+        </div>
+
+        <button type="submit">Submit Feedback</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Optional JavaScript for form validation or interactions
+
+            const form = document.querySelector('form');
+
+            form.addEventListener('submit', function(event) {
+                // Example: Validate that all fields are filled
+                const inputs = form.querySelectorAll('input, textarea, select');
+                let isValid = true;
+
+                inputs.forEach(input => {
+                    if (!input.value) {
+                        isValid = false;
+                        input.style.borderColor = 'red';
+                    } else {
+                        input.style.borderColor = '#ddd';
+                    }
+                });
+
+                if (!isValid) {
+                    alert('Please fill in all required fields.');
+                    event.preventDefault(); // Prevent form submission
+                }
+            });
+        });
+    </script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div id="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }} show">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Your content here -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 3000); // Message will fade out after 3 seconds
+            });
+        });
+    </script>
+{% endblock %}

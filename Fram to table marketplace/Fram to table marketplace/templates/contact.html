@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<header>
+    <nav>
+        <ul>
+            {% if session['username'] %}
+            <li><a href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+            
+            {% endif %}
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for('services') }}">Services</a></li>
+            <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+            {% if session['username'] %}
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<h2>Contact Us</h2>
+<p>If you have any queries, feel free to reach out to us:</p>
+
+<!-- Inline CSS to ensure proper visibility of labels and inputs -->
+<style>
+    form {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+        font-size: 16px;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Optional: Responsive Design */
+    @media (max-width: 600px) {
+        form {
+            padding: 15px;
+        }
+
+        input, textarea {
+            font-size: 14px;
+        }
+    }
+    .flash-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        background-color: #333;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .flash-message.show {
+        opacity: 1;
+    }
+
+    .flash-message.success {
+        background-color: #28a745;
+    }
+
+    .flash-message.error {
+        background-color: #dc3545;
+    }
+
+    .flash-message.info {
+        background-color: #007bff;
+    }
+
+    .flash-message.warning {
+        background-color: #ffc107;
+    }
+</style>
+
+<form method="POST" action="{{ url_for('contact') }}">
+    <label for="name">Name:</label>
+    <input type="text" name="name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" required>
+
+    <label for="message">Message:</label>
+    <textarea name="message" rows="4" required></textarea>
+
+    <button type="submit">Send Message</button>
+</form>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div id="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }} show">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Your content here -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 3000); // Message will fade out after 3 seconds
+            });
+        });
+    </script>
+{% endblock %}
